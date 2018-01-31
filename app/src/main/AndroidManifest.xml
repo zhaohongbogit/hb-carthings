@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hongbo.car">
 
-    <application>
+    <application android:name=".ZApplication">
         <uses-library android:name="com.google.android.things" />
 
         <activity android:name=".MainActivity">

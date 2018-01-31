@@ -27,4 +27,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compileOnly 'com.google.android.things:androidthings:+'
+    implementation 'com.wilddog.client:wilddog-sync-android:2.3.7'
+    implementation 'com.google.code.gson:gson:2.8.2'
 }
