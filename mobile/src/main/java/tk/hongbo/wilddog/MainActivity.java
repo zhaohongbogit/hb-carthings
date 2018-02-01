@@ -3,7 +3,6 @@ package tk.hongbo.wilddog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 import com.wilddog.client.ChildEventListener;
@@ -12,15 +11,15 @@ import com.wilddog.client.Query;
 import com.wilddog.client.SyncError;
 import com.wilddog.client.SyncReference;
 import com.wilddog.client.WilddogSync;
-import com.wilddog.wilddogauth.WilddogAuth;
-import com.wilddog.wilddogauth.core.Task;
-import com.wilddog.wilddogauth.core.listener.OnCompleteListener;
-import com.wilddog.wilddogauth.core.result.AuthResult;
-import com.wilddog.wilddogauth.model.WilddogUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import tk.hongbo.wilddog.entity.MoveEntity;
+import tk.hongbo.car.widget.RockerView;
+import tk.hongbo.publicdata.Direction;
+import tk.hongbo.publicdata.MoveEntity;
+import tk.hongbo.publicdata.Power;
+
+import static tk.hongbo.car.widget.RockerView.Direction.DIRECTION_CENTER;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,8 +27,12 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.msg)
     TextView msg;
+    @BindView(R.id.rockerView)
+    RockerView rockerView;
 
-    private SyncReference mWilddogRef;
+    private final String WILDDOG_REF = "move-test";
+    private final String WILDDOG_REF_STATUS = WILDDOG_REF + "-status";
+    private SyncReference mWilddogRef; //野狗数据仓库
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,38 +40,103 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        WilddogAuth.getInstance().signInAnonymously().addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        //野狗身份认证
+//        WilddogAuth.getInstance().signInAnonymously().addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//            @Override
+//            public void onComplete(Task<AuthResult> var1) {
+//                if (var1.isSuccessful()) {
+//                    Log.d("success", "Login success!");
+//                    Log.d("Anonymous", String.valueOf(var1.getResult().getWilddogUser().isAnonymous()) +
+//                            "，UID：" + String.valueOf(var1.getResult().getWilddogUser().getUid()));
+//                } else {
+//                    Log.d("failure", "reason:" + var1.getException());
+//                }
+//            }
+//        });
+
+        //摇杆监听
+        rockerView.setCallBackMode(RockerView.CallBackMode.CALL_BACK_MODE_STATE_CHANGE);
+        rockerView.setOnShakeListener(RockerView.DirectionMode.DIRECTION_8, new RockerView.OnShakeListener() {
             @Override
-            public void onComplete(Task<AuthResult> var1) {
-                if (var1.isSuccessful()) {
-                    Log.d("success", "Login success!");
-                    Log.d("Anonymous", String.valueOf(var1.getResult().getWilddogUser().isAnonymous()) +
-                            "，UID：" + String.valueOf(var1.getResult().getWilddogUser().getUid()));
-                } else {
-                    Log.d("failure", "reason:" + var1.getException());
-                }
+            public void onStart() {
+//                Log.d(TAG, "RockerView onStart");
+            }
+
+            @Override
+            public void direction(RockerView.Direction direction) {
+                shendMove(direction);
+            }
+
+            @Override
+            public void onFinish() {
+//                Log.d(TAG, "RockerView onFinish");
+                shendMove(DIRECTION_CENTER);
             }
         });
 
-        mWilddogRef = WilddogSync.getInstance().getReference().child("move");
+        //数据变化监听
+        mWilddogRef = WilddogSync.getInstance().getReference().child(WILDDOG_REF);
         Query query = mWilddogRef.limitToLast(1);
         query.addChildEventListener(listener);
+    }
+
+    /**
+     * 相应角度
+     *
+     * @param direction
+     */
+    private void shendMove(RockerView.Direction direction) {
+        switch (direction) {
+            case DIRECTION_LEFT:
+                Log.d(TAG, "DIRECTION_LEFT");
+                sendMsg(Direction.DIRECTION_LEFT, Power.POWER_STOP);
+                break;
+            case DIRECTION_RIGHT:
+                Log.d(TAG, "DIRECTION_RIGHT");
+                sendMsg(Direction.DIRECTION_RIGHT, Power.POWER_STOP);
+                break;
+            case DIRECTION_UP:
+                Log.d(TAG, "DIRECTION_UP");
+                sendMsg(Direction.DIRECTION_RUN, Power.POWER_FORWARD_HIGH);
+                break;
+            case DIRECTION_DOWN:
+                Log.d(TAG, "DIRECTION_DOWN");
+                sendMsg(Direction.DIRECTION_RUN, Power.POWER_BACK_HIGH);
+                break;
+            case DIRECTION_UP_LEFT:
+                Log.d(TAG, "DIRECTION_UP_LEFT");
+                sendMsg(Direction.DIRECTION_LEFT, Power.POWER_FORWARD_LOW);
+                break;
+            case DIRECTION_UP_RIGHT:
+                Log.d(TAG, "DIRECTION_UP_RIGHT");
+                sendMsg(Direction.DIRECTION_RIGHT, Power.POWER_FORWARD_LOW);
+                break;
+            case DIRECTION_DOWN_LEFT:
+                Log.d(TAG, "DIRECTION_DOWN_LEFT");
+                sendMsg(Direction.DIRECTION_LEFT, Power.POWER_BACK_LOW);
+                break;
+            case DIRECTION_DOWN_RIGHT:
+                Log.d(TAG, "DIRECTION_DOWN_RIGHT");
+                sendMsg(Direction.DIRECTION_RIGHT, Power.POWER_BACK_LOW);
+                break;
+            case DIRECTION_CENTER:
+                Log.d(TAG, "DIRECTION_CENTER");
+                sendMsg(Direction.DIRECTION_RUN, Power.POWER_STOP);
+                break;
+        }
     }
 
     ChildEventListener listener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Log.d(TAG, "onChildAdded ，" + s);
-            if (dataSnapshot.exists()) {
-                MoveEntity entity = MoveEntity.parse(dataSnapshot.getValue());
-                Log.d(TAG, "MoveEntiry," + entity.moveCode);
-                msg.setText("新动作：" + entity.moveCode);
-            }
+            onMessage(dataSnapshot);
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
             Log.d(TAG, "onChildChanged ，" + s);
+            onMessage(dataSnapshot);
         }
 
         @Override
@@ -87,72 +155,35 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    public void onMessage(DataSnapshot dataSnapshot) {
+        if (dataSnapshot.exists()) {
+            MoveEntity entity = MoveEntity.parse(dataSnapshot.getValue());
+            msg.setText("moveDirection：" + entity.moveDirection + "\r\nmovePower：" + entity.movePower);
+        }
+    }
+
+    /**
+     * 做出响应
+     *
+     * @param direction
+     * @param power
+     */
+    private void sendMsg(Direction direction, Power power) {
+        MoveEntity entity = new MoveEntity();
+        entity.moveDirection = direction;
+        entity.movePower = power;
+        pushMove(entity);
+    }
+
     /**
      * 推送操作数据到云端
      *
-     * @param moveType
+     * @param moveEntity
      */
-    private void pushMove(MoveEntity.MoveType moveType) {
-        if (moveType == null) {
+    private void pushMove(MoveEntity moveEntity) {
+        if (moveEntity == null) {
             return;
         }
-        MoveEntity entity = new MoveEntity();
-        entity.moveCode = moveType.getCode();
-        Log.d(TAG, "The random number is " + entity.moveCode);
-        mWilddogRef.push().setValue(entity);
-    }
-
-    /**
-     * 动力前进
-     *
-     * @param view
-     */
-    public void activityForwad(View view) {
-        pushMove(MoveEntity.MoveType.MOVE_TYPE_FORWAD);
-    }
-
-    /**
-     * 动力后退
-     *
-     * @param view
-     */
-    public void activityBack(View view) {
-        pushMove(MoveEntity.MoveType.MOVE_TYPE_BACK);
-    }
-
-    /**
-     * 动力停止
-     *
-     * @param view
-     */
-    public void activityStop(View view) {
-        pushMove(MoveEntity.MoveType.MOVE_TYPE_STOP);
-    }
-
-    /**
-     * 方向左转
-     *
-     * @param view
-     */
-    public void activityLeft(View view) {
-        pushMove(MoveEntity.MoveType.MOVE_TYPE_LEFT);
-    }
-
-    /**
-     * 方向右转
-     *
-     * @param view
-     */
-    public void activityRight(View view) {
-        pushMove(MoveEntity.MoveType.MOVE_TYPE_RIGHT);
-    }
-
-    /**
-     * 方向直行
-     *
-     * @param view
-     */
-    public void activityRun(View view) {
-        pushMove(MoveEntity.MoveType.MOVE_TYPE_RUN);
+        mWilddogRef.child(WILDDOG_REF_STATUS).setValue(moveEntity);
     }
 }
