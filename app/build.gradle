@@ -20,7 +20,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.google.android.things.contrib:driver-pwmservo:0.2'
     implementation 'com.android.support:support-v4:27.0.2'
     testImplementation 'junit:junit:4.12'
@@ -29,4 +29,5 @@ dependencies {
     compileOnly 'com.google.android.things:androidthings:+'
     implementation 'com.wilddog.client:wilddog-sync-android:2.3.7'
     implementation 'com.google.code.gson:gson:2.8.2'
+    implementation project(':publicData')
 }

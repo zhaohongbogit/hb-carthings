@@ -15,6 +15,7 @@ import com.wilddog.client.WilddogSync;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import tk.hongbo.car.widget.RockerView;
+import tk.hongbo.publicdata.Constans;
 import tk.hongbo.publicdata.Direction;
 import tk.hongbo.publicdata.MoveEntity;
 import tk.hongbo.publicdata.Power;
@@ -30,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.rockerView)
     RockerView rockerView;
 
-    private final String WILDDOG_REF = "move-test";
-    private final String WILDDOG_REF_STATUS = WILDDOG_REF + "-status";
     private SyncReference mWilddogRef; //野狗数据仓库
 
     @Override
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //数据变化监听
-        mWilddogRef = WilddogSync.getInstance().getReference().child(WILDDOG_REF);
+        mWilddogRef = WilddogSync.getInstance().getReference().child(Constans.WILDDOG_REF);
         Query query = mWilddogRef.limitToLast(1);
         query.addChildEventListener(listener);
     }
@@ -184,6 +183,6 @@ public class MainActivity extends AppCompatActivity {
         if (moveEntity == null) {
             return;
         }
-        mWilddogRef.child(WILDDOG_REF_STATUS).setValue(moveEntity);
+        mWilddogRef.child(Constans.WILDDOG_REF_STATUS).setValue(moveEntity);
     }
 }
