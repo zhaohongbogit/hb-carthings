@@ -27,8 +27,8 @@ public class RockerView extends View {
 
     private static final String TAG = "RockerView";
 
-    private static final int DEFAULT_SIZE = 500;
-    private static final int DEFAULT_ROCKER_RADIUS = DEFAULT_SIZE / 8;
+    private static final int DEFAULT_SIZE = 1000;
+    private static final int DEFAULT_ROCKER_RADIUS = DEFAULT_SIZE / 5;
 
     private Paint mAreaBackgroundPaint;
     private Paint mRockerPaint;
