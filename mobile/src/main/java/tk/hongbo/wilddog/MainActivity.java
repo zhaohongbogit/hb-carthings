@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         //数据变化监听
         mWilddogRef = WilddogSync.getInstance().getReference().child(Constans.WILDDOG_REF);
-        Query query = mWilddogRef.child(MoveEntity.WILDDOG_REF_MOVE);
+        Query query = mWilddogRef.startAt();
         query.addChildEventListener(listener);
     }
 
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void onMessage(DataSnapshot dataSnapshot) {
-        if (dataSnapshot.exists()) {
+        if (dataSnapshot.exists() && dataSnapshot.getKey().equals(MoveEntity.WILDDOG_REF_MOVE)) {
             MoveEntity entity = MoveEntity.parse(dataSnapshot.getValue());
             msg.setText("moveDirection：" + entity.moveDirection + "\r\nmovePower：" + entity.movePower);
         }

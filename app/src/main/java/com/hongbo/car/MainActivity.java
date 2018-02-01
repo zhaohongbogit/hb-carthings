@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setupServo();
         SyncReference mWilddogRef = WilddogSync.getInstance().getReference().child(Constans.WILDDOG_REF);
-        Query query = mWilddogRef.child(MoveEntity.WILDDOG_REF_MOVE);
+        Query query = mWilddogRef.startAt();
         query.addChildEventListener(listener);
     }
 
@@ -64,7 +64,7 @@ public class MainActivity extends Activity {
     };
 
     public void onMessage(DataSnapshot dataSnapshot) {
-        if (dataSnapshot.exists()) {
+        if (dataSnapshot.exists() && dataSnapshot.getKey().equals(MoveEntity.WILDDOG_REF_MOVE)) {
             MoveEntity entity = MoveEntity.parse(dataSnapshot.getValue());
             trans(entity);
         }
