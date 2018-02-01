@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         //数据变化监听
         mWilddogRef = WilddogSync.getInstance().getReference().child(Constans.WILDDOG_REF);
-        Query query = mWilddogRef.limitToLast(1);
+        Query query = mWilddogRef.child(MoveEntity.WILDDOG_REF_MOVE);
         query.addChildEventListener(listener);
     }
 
@@ -183,6 +183,6 @@ public class MainActivity extends AppCompatActivity {
         if (moveEntity == null) {
             return;
         }
-        mWilddogRef.child(Constans.WILDDOG_REF_STATUS).setValue(moveEntity);
+        mWilddogRef.child(MoveEntity.WILDDOG_REF_MOVE).setValue(moveEntity);
     }
 }

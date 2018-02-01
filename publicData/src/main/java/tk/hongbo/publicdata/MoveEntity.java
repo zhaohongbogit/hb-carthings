@@ -8,6 +8,8 @@ import com.google.gson.Gson;
  */
 public class MoveEntity {
 
+    public static final String WILDDOG_REF_MOVE = "moveEntity";
+
     public Power movePower;
     public Direction moveDirection;
 
