@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
         try {
             switch (moveType) {
                 case MOVE_TYPE_LEFT:
-                    mServo.setAngle(20);
+                    mServo.setAngle(40);
                     break;
                 case MOVE_TYPE_RIGHT:
                     mServo.setAngle(120);
