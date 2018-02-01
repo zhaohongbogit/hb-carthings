@@ -185,4 +185,10 @@ public class MainActivity extends AppCompatActivity {
         }
         mWilddogRef.child(MoveEntity.WILDDOG_REF_MOVE).setValue(moveEntity);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mWilddogRef.startAt().removeEventListener(listener);
+    }
 }
