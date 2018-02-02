@@ -99,13 +99,13 @@ public class MainActivity extends Activity {
     private void transDirection(Direction direction) throws IOException {
         switch (direction) {
             case DIRECTION_RUN:
-                mServo.setAngle(90);
+                mServo.setAngle(90f);
                 break;
             case DIRECTION_LEFT:
-                mServo.setAngle(40);
+                mServo.setAngle(0f);
                 break;
             case DIRECTION_RIGHT:
-                mServo.setAngle(120);
+                mServo.setAngle(180f);
                 break;
         }
     }
