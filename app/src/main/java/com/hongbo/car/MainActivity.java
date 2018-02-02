@@ -102,10 +102,10 @@ public class MainActivity extends Activity {
                 mServo.setAngle(90);
                 break;
             case DIRECTION_LEFT:
-                mServo.setAngle(40);
+                mServo.setAngle(0);
                 break;
             case DIRECTION_RIGHT:
-                mServo.setAngle(120);
+                mServo.setAngle(180);
                 break;
         }
     }
