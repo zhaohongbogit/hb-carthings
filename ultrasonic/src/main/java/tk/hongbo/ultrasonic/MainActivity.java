@@ -14,8 +14,8 @@ import java.io.IOException;
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private static final String gpioTrigPinName = "BCM23";
-    private static final String gpioEchoPinName = "BCM24";
+    private static final String gpioTrigPinName = "BCM24"; //黄线
+    private static final String gpioEchoPinName = "BCM23";
 
     private Gpio mTrigGpio;
     private Gpio mEchoGpio;
@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
             mEchoGpio = service.openGpio(gpioEchoPinName);
             mEchoGpio.setDirection(Gpio.DIRECTION_IN); //设置为输入引脚
             mEchoGpio.setActiveType(Gpio.ACTIVE_HIGH); //设置高电压为有效电压
-            mEchoGpio.setEdgeTriggerType(Gpio.EDGE_FALLING); //注册状态更改监听
+            mEchoGpio.setEdgeTriggerType(Gpio.EDGE_BOTH); //注册状态更改监听
             mEchoGpio.registerGpioCallback(gpioCallback); //注册监听回调
         } catch (IOException e) {
             e.printStackTrace();
@@ -68,16 +68,16 @@ public class MainActivity extends Activity {
             try {
                 Log.d(TAG, "Send ultrasonic message");
                 mTrigGpio.setValue(true); //输出高电平
-                Thread.sleep(1);//高电平输出25US
+//                Thread.sleep((long) 1);//高电平输出25US
                 mTrigGpio.setValue(false); //恢复低电平
-                handler.postDelayed(runnable, 3000);
+                handler.postDelayed(runnable, 1000);
             } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     };
+
+    private long startTime = 0; //收到一次超声波时间
 
     GpioCallback gpioCallback = new GpioCallback() {
         @Override
@@ -85,20 +85,23 @@ public class MainActivity extends Activity {
             try {
                 if (gpio.getValue()) {
                     //接收到高电平开始计时
-                    Log.d(TAG, "===收到高电平===");
+                    startTime = System.currentTimeMillis();
                 } else {
+                    if (startTime == 0) {
+                        return true;
+                    }
+                    long endTime = System.currentTimeMillis();
                     //接收到低电平结束计时
-                    Log.d(TAG, "===收到低电平===");
+                    float time = (endTime - startTime) / 1000f; //间隔时间s
+                    float distance = 340f * time / 2f;
+                    Log.d(TAG, "本次测量，高电平：" + startTime + "，低电平：" + endTime
+                            + "，距离：" + distance + "M，花费时间：" + time + "S");
+                    startTime = 0;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return true;
-        }
-
-        @Override
-        public void onGpioError(Gpio gpio, int error) {
-            Log.d(TAG, "onGpioError，" + error);
         }
     };
 
