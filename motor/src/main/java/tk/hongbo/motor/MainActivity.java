@@ -20,6 +20,8 @@ public class MainActivity extends Activity {
 
     Handler handler = new Handler();
 
+    private static int max_trove = 1; //最大反转次数
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +32,7 @@ public class MainActivity extends Activity {
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            if (motorEn1 == null || motorEn2 == null) {
+            if (motorEn1 == null || motorEn2 == null || max_trove > 5) {
                 return;
             }
             try {
@@ -44,7 +46,8 @@ public class MainActivity extends Activity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            handler.postDelayed(runnable, 10000); //10s进行反方向转动
+            max_trove++;
+            handler.postDelayed(runnable, 3000); //10s进行反方向转动
         }
     };
 
