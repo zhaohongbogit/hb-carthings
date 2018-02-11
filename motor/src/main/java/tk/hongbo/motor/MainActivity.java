@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
             max_trove++;
-            handler.postDelayed(runnable, 10000); //10s进行反方向转动
+            handler.postDelayed(runnable, 5000); //10s进行反方向转动
         }
     };
 
