@@ -1,1 +1,1 @@
-include ':app',':mobile', ':carLibrary', ':publicData', ':supersonicwave', ':ultrasonic', ':motor'
+include ':app',':mobile', ':carLibrary', ':publicData', ':ultrasonic', ':motor'
