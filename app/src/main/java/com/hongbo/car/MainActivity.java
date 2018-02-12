@@ -171,7 +171,7 @@ public class MainActivity extends Activity {
                 break;
             case POWER_FORWARD_LOW:
                 runMotor(1);
-                runMoto2(30);
+                runMoto2(80);
                 break;
             case POWER_BACK_HIGH:
                 runMotor(2);
@@ -179,7 +179,7 @@ public class MainActivity extends Activity {
                 break;
             case POWER_BACK_LOW:
                 runMotor(2);
-                runMoto2(30);
+                runMoto2(80);
                 break;
         }
     }
@@ -221,7 +221,15 @@ public class MainActivity extends Activity {
      */
     private void runMoto2(int su) {
         try {
-            motorENA.setPwmDutyCycle(su);
+            if (motorENA == null) {
+                return;
+            }
+            if (su == 0) {
+                motorENA.setEnabled(false);
+            } else {
+                motorENA.setEnabled(true);
+                motorENA.setPwmDutyCycle(su);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
