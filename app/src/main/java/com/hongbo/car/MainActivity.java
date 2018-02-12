@@ -10,6 +10,7 @@ import com.wilddog.client.DataSnapshot;
 import com.wilddog.client.Query;
 import com.wilddog.client.SyncError;
 import com.wilddog.client.SyncReference;
+import com.wilddog.client.ValueEventListener;
 import com.wilddog.client.WilddogSync;
 
 import java.io.IOException;
@@ -22,16 +23,40 @@ import tk.hongbo.publicdata.Power;
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private static final String PWM_BUS = "PWM0";
+    private static final String PWM_BUS = "PWM1";
     private Servo mServo;
+    SyncReference mWilddogRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupServo();
-        SyncReference mWilddogRef = WilddogSync.getInstance().getReference().child(Constans.WILDDOG_REF);
-        Query query = mWilddogRef.startAt();
-        query.addChildEventListener(listener);
+        mWilddogRef = WilddogSync.getInstance().getReference().child(Constans.WILDDOG_REF);
+        mWilddogRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG,"1111111111");
+            }
+
+            @Override
+            public void onCancelled(SyncError syncError) {
+                Log.d(TAG,"1111111111");
+            }
+        });
+        mWilddogRef.addChildEventListener(listener);
+        mWilddogRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG,"222222222222222");
+            }
+
+            @Override
+            public void onCancelled(SyncError syncError) {
+                Log.d(TAG,"222222222222222");
+            }
+        });
+
+        mWilddogRef.push().setValue("1111111111111111");
     }
 
     ChildEventListener listener = new ChildEventListener() {
@@ -74,6 +99,7 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         destroyServo();
+        mWilddogRef.startAt().removeEventListener(listener);
     }
 
     /**
@@ -143,6 +169,7 @@ public class MainActivity extends Activity {
     private void destroyServo() {
         if (mServo != null) {
             try {
+                mServo.setEnabled(false);
                 mServo.close();
             } catch (IOException e) {
                 Log.e(TAG, "Error closing Servo");

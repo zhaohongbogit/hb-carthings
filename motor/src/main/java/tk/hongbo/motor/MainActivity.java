@@ -14,8 +14,8 @@ public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private static final String EN1_PORT_NAME = "BCM22";
-    private static final String EN2_PORT_NAME = "BCM23";
+    private static final String EN1_PORT_NAME = "BCM17";
+    private static final String EN2_PORT_NAME = "BCM27";
     private static final String ENA_PORT_NAME = "PWM0";
 
     Gpio motorEn1; //输入1针脚
