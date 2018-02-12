@@ -7,10 +7,8 @@ import android.util.Log;
 import com.google.android.things.contrib.driver.pwmservo.Servo;
 import com.wilddog.client.ChildEventListener;
 import com.wilddog.client.DataSnapshot;
-import com.wilddog.client.Query;
 import com.wilddog.client.SyncError;
 import com.wilddog.client.SyncReference;
-import com.wilddog.client.ValueEventListener;
 import com.wilddog.client.WilddogSync;
 
 import java.io.IOException;
@@ -32,31 +30,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setupServo();
         mWilddogRef = WilddogSync.getInstance().getReference().child(Constans.WILDDOG_REF);
-        mWilddogRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG,"1111111111");
-            }
-
-            @Override
-            public void onCancelled(SyncError syncError) {
-                Log.d(TAG,"1111111111");
-            }
-        });
         mWilddogRef.addChildEventListener(listener);
-        mWilddogRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG,"222222222222222");
-            }
-
-            @Override
-            public void onCancelled(SyncError syncError) {
-                Log.d(TAG,"222222222222222");
-            }
-        });
-
-        mWilddogRef.push().setValue("1111111111111111");
     }
 
     ChildEventListener listener = new ChildEventListener() {
@@ -123,15 +97,18 @@ public class MainActivity extends Activity {
      * @throws IOException
      */
     private void transDirection(Direction direction) throws IOException {
+        if (mServo == null) {
+            return;
+        }
         switch (direction) {
             case DIRECTION_RUN:
-                mServo.setAngle(90);
+                mServo.setAngle(90f);
                 break;
             case DIRECTION_LEFT:
-                mServo.setAngle(0);
+                mServo.setAngle(1f);
                 break;
             case DIRECTION_RIGHT:
-                mServo.setAngle(180);
+                mServo.setAngle(150f);
                 break;
         }
     }
