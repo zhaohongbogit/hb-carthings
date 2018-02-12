@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
             motorEn1 = service.openGpio(EN1_PORT_NAME);
             motorEn1.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
             motorEn1.setActiveType(Gpio.ACTIVE_HIGH);
-            motorEn1.setValue(true);
+            motorEn1.setValue(false);
 
             motorEn2 = service.openGpio(EN2_PORT_NAME);
             motorEn2.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
@@ -146,7 +146,7 @@ public class MainActivity extends Activity {
                 mServo.setAngle(90f);
                 break;
             case DIRECTION_LEFT:
-                mServo.setAngle(1f);
+                mServo.setAngle(0f);
                 break;
             case DIRECTION_RIGHT:
                 mServo.setAngle(150f);
@@ -232,6 +232,7 @@ public class MainActivity extends Activity {
             mServo = new Servo(PWM_BUS);
             mServo.setAngleRange(0f, 180f);
             mServo.setEnabled(true);
+            mServo.setAngle(90f);
         } catch (IOException e) {
             Log.e(TAG, "Error creating Servo", e);
         }
