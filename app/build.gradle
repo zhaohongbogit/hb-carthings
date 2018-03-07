@@ -21,13 +21,13 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.google.android.things.contrib:driver-pwmservo:0.2'
-    implementation 'com.android.support:support-v4:27.0.2'
+    compileOnly 'com.google.android.things:androidthings:+'
+    implementation 'com.google.android.things.contrib:driver-pwmservo:+'
+    implementation 'com.android.support:support-v4:+'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    compileOnly 'com.google.android.things:androidthings:+'
-    implementation 'com.wilddog.client:wilddog-sync-android:2.3.7'
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.wilddog.client:wilddog-sync-android:+'
+    implementation 'com.google.code.gson:gson:+'
     implementation project(':publicData')
 }
