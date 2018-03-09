@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.google.android.things.contrib.driver.pwmservo.Servo;
 import com.google.android.things.pio.Gpio;
-import com.google.android.things.pio.PeripheralManagerService;
+import com.google.android.things.pio.PeripheralManager;
 import com.google.android.things.pio.Pwm;
 import com.wilddog.client.ChildEventListener;
 import com.wilddog.client.DataSnapshot;
@@ -88,19 +88,19 @@ public class MainActivity extends Activity {
      * 初始化针脚1引用
      */
     private void initGpio() {
-        PeripheralManagerService service = new PeripheralManagerService();
+        PeripheralManager manager = PeripheralManager.getInstance();
         try {
-            motorEn1 = service.openGpio(EN1_PORT_NAME);
+            motorEn1 = manager.openGpio(EN1_PORT_NAME);
             motorEn1.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
             motorEn1.setActiveType(Gpio.ACTIVE_HIGH);
             motorEn1.setValue(false);
 
-            motorEn2 = service.openGpio(EN2_PORT_NAME);
+            motorEn2 = manager.openGpio(EN2_PORT_NAME);
             motorEn2.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
             motorEn2.setActiveType(Gpio.ACTIVE_HIGH);
             motorEn2.setValue(false);
 
-            motorENA = service.openPwm(ENA_PORT_NAME);
+            motorENA = manager.openPwm(ENA_PORT_NAME);
             motorENA.setPwmFrequencyHz(50);
             motorENA.setPwmDutyCycle(100);
             motorENA.setEnabled(true);
