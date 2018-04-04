@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.google.android.things.pio.Gpio;
-import com.google.android.things.pio.PeripheralManagerService;
+import com.google.android.things.pio.PeripheralManager;
 import com.google.android.things.pio.Pwm;
 
 import java.io.IOException;
@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
      * 初始化针脚1引用
      */
     private void initGpio() {
-        PeripheralManagerService service = new PeripheralManagerService();
+        PeripheralManager service = PeripheralManager.getInstance();
         try {
             motorEn1 = service.openGpio(EN1_PORT_NAME);
             motorEn1.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
