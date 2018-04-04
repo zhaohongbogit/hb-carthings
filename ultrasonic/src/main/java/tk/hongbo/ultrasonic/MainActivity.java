@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.GpioCallback;
-import com.google.android.things.pio.PeripheralManagerService;
+import com.google.android.things.pio.PeripheralManager;
 
 import java.io.IOException;
 
@@ -37,12 +37,11 @@ public class MainActivity extends Activity {
 
     private void setupButton() {
         try {
-            PeripheralManagerService service = new PeripheralManagerService();
-            mTrigGpio = service.openGpio(gpioTrigPinName);
+            mTrigGpio = PeripheralManager.getInstance().openGpio(gpioTrigPinName);
             mTrigGpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW); //将引脚初始化为低电平输出
             mTrigGpio.setActiveType(Gpio.ACTIVE_HIGH); //输出电压设置为高电压
 
-            mEchoGpio = service.openGpio(gpioEchoPinName);
+            mEchoGpio = PeripheralManager.getInstance().openGpio(gpioEchoPinName);
             mEchoGpio.setDirection(Gpio.DIRECTION_IN); //设置为输入引脚
             mEchoGpio.setActiveType(Gpio.ACTIVE_HIGH); //设置高电压为有效电压
             mEchoGpio.setEdgeTriggerType(Gpio.EDGE_BOTH); //注册状态更改监听
