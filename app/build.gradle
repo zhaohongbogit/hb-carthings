@@ -4,12 +4,11 @@ android {
     compileSdkVersion 28
     buildToolsVersion '28.0.2'
     defaultConfig {
-        applicationId "com.hongbo.car"
+        applicationId "tk.hongbo.car"
         minSdkVersion 27
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -22,8 +21,20 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     compileOnly 'com.google.android.things:androidthings:+'
+    implementation project(':publicData')
     implementation 'com.google.android.things.contrib:driver-pwmservo:+'
     implementation 'com.android.support:support-v4:+'
     implementation 'com.wilddog.client:wilddog-sync-android:+'
-    implementation project(':publicData')
+    implementation 'com.google.code.gson:gson:+'
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion '27.1.0'
+            }
+        }
+    }
 }

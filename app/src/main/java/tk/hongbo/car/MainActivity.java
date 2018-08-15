@@ -1,4 +1,4 @@
-package com.hongbo.car;
+package tk.hongbo.car;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -10,8 +10,10 @@ import com.google.android.things.pio.PeripheralManager;
 import com.google.android.things.pio.Pwm;
 import com.wilddog.client.ChildEventListener;
 import com.wilddog.client.DataSnapshot;
+import com.wilddog.client.Query;
 import com.wilddog.client.SyncError;
 import com.wilddog.client.SyncReference;
+import com.wilddog.client.ValueEventListener;
 import com.wilddog.client.WilddogSync;
 
 import java.io.IOException;
@@ -44,9 +46,25 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setupServo();
         initGpio(); //初始化电机
-        mWilddogRef = WilddogSync.getInstance().getReference().child(Constans.WILDDOG_REF);
-        mWilddogRef.addChildEventListener(listener);
+
+        //监听数据裱花
+        mWilddogRef = WilddogSync.getInstance().getReference();
+        mWilddogRef.addValueEventListener(eventListener);
+        Query query = mWilddogRef.child(Constans.WILDDOG_REF).startAt();
+        query.addChildEventListener(listener);
     }
+
+    ValueEventListener eventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            Log.d(TAG, "onDataChange");
+        }
+
+        @Override
+        public void onCancelled(SyncError syncError) {
+            Log.d(TAG, "onCancelled");
+        }
+    };
 
     ChildEventListener listener = new ChildEventListener() {
         @Override
