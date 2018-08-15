@@ -5,11 +5,10 @@ android {
     buildToolsVersion '28.0.2'
     defaultConfig {
         applicationId "tk.hongbo.wilddog"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {

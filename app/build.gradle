@@ -25,7 +25,6 @@ dependencies {
     implementation 'com.google.android.things.contrib:driver-pwmservo:+'
     implementation 'com.android.support:support-v4:+'
     implementation 'com.wilddog.client:wilddog-sync-android:+'
-    implementation 'com.google.code.gson:gson:+'
 }
 
 configurations.all {
