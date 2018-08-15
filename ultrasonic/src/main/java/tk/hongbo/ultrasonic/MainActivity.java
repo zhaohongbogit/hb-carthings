@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.GpioCallback;
-import com.google.android.things.pio.PeripheralManagerService;
+import com.google.android.things.pio.PeripheralManager;
 
 import java.io.IOException;
 
@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
 
     private void setupButton() {
         try {
-            PeripheralManagerService service = new PeripheralManagerService();
+            PeripheralManager service = PeripheralManager.getInstance();
             mTrigGpio = service.openGpio(gpioTrigPinName);
             mTrigGpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW); //将引脚初始化为低电平输出
             mTrigGpio.setActiveType(Gpio.ACTIVE_HIGH); //输出电压设置为高电压

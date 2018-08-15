@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.2'
     defaultConfig {
         applicationId "com.hongbo.car"
         minSdkVersion 27
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -24,10 +24,6 @@ dependencies {
     compileOnly 'com.google.android.things:androidthings:+'
     implementation 'com.google.android.things.contrib:driver-pwmservo:+'
     implementation 'com.android.support:support-v4:+'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation 'com.wilddog.client:wilddog-sync-android:+'
-    implementation 'com.google.code.gson:gson:+'
     implementation project(':publicData')
 }

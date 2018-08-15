@@ -99,10 +99,6 @@ public class RockerView extends View {
         // 获取自定义属性
         initAttribute(context, attrs);
 
-        if (isInEditMode()) {
-//            Log.i(TAG, "RockerView: isInEditMode");
-        }
-
         // 移动区域画笔
         mAreaBackgroundPaint = new Paint();
         mAreaBackgroundPaint.setAntiAlias(true);
