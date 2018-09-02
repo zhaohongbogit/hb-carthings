@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 27
+
 
     defaultConfig {
         applicationId "tk.hongbo.ultrasonic"
         minSdkVersion 27
-        targetSdkVersion 28
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 
@@ -25,11 +26,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.google.android.things.contrib:driver-button:0.3'
+    implementation 'com.google.android.things.contrib:driver-button:+'
     implementation 'com.android.support:support-v4:+'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compileOnly 'com.google.android.things:androidthings:+'
 }
 
