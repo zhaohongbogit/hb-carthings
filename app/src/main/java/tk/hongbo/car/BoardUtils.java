@@ -48,22 +48,22 @@ public class BoardUtils {
 
         @Override
         public String getServoBus() {
-            return null;
+            return "PWM1";
         }
 
         @Override
         public String getServoBusEn1() {
-            return null;
+            return "GPIO2_IO01";
         }
 
         @Override
         public String getServoBusEn2() {
-            return null;
+            return "GPIO2_IO02";
         }
 
         @Override
         public String getServoBusEnA() {
-            return null;
+            return "PWM2";
         }
     }
 
