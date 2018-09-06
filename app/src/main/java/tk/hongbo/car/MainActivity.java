@@ -97,14 +97,14 @@ public class MainActivity extends Activity {
      */
     private void initGpio() {
         try {
-            mServo = PioUtils.openPwnYun();
+            mServo = BoardUtils.openPwnYun();
             mServo.setAngleRange(0f, 180f);
             mServo.setEnabled(true);
             mServo.setAngle(90f);
 
-            motorEn1 = PioUtils.openEn1();
-            motorEn2 = PioUtils.openEn2();
-            motorENA = PioUtils.openPwn();
+            motorEn1 = BoardUtils.openEn1();
+            motorEn2 = BoardUtils.openEn2();
+            motorENA = BoardUtils.openPwn();
             motorENA.setEnabled(true);
         } catch (IOException e) {
             e.printStackTrace();

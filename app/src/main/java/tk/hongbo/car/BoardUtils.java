@@ -9,7 +9,7 @@ import com.google.android.things.pio.Pwm;
 
 import java.io.IOException;
 
-public class PioUtils {
+public class BoardUtils {
 
     private interface BoardDefaults {
         String getServoBus(); //获取前轮转向舵机端口
