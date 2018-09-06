@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.google.android.things.contrib.driver.pwmservo.Servo;
 import com.google.android.things.pio.Gpio;
-import com.google.android.things.pio.PeripheralManager;
 import com.google.android.things.pio.Pwm;
 import com.wilddog.client.ChildEventListener;
 import com.wilddog.client.DataSnapshot;
@@ -26,25 +25,16 @@ import tk.hongbo.publicdata.Power;
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    //转向舵机控制
-    private static final String PWM_BUS = "PWM1";
-
-    //点击控制部分
-    private static final String EN1_PORT_NAME = "BCM17";
-    private static final String EN2_PORT_NAME = "BCM27";
-    private static final String ENA_PORT_NAME = "PWM0";
-
     Gpio motorEn1; //输入1针脚
     Gpio motorEn2; //输入2针脚
     Pwm motorENA; //使能端A
+    Servo mServo;
 
-    private Servo mServo;
     SyncReference mWilddogRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setupServo();
         initGpio(); //初始化电机
 
         //监听数据裱花
@@ -106,21 +96,15 @@ public class MainActivity extends Activity {
      * 初始化针脚1引用
      */
     private void initGpio() {
-        PeripheralManager manager = PeripheralManager.getInstance();
         try {
-            motorEn1 = manager.openGpio(EN1_PORT_NAME);
-            motorEn1.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
-            motorEn1.setActiveType(Gpio.ACTIVE_HIGH);
-            motorEn1.setValue(false);
+            mServo = PioUtils.openPwnYun();
+            mServo.setAngleRange(0f, 180f);
+            mServo.setEnabled(true);
+            mServo.setAngle(90f);
 
-            motorEn2 = manager.openGpio(EN2_PORT_NAME);
-            motorEn2.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
-            motorEn2.setActiveType(Gpio.ACTIVE_HIGH);
-            motorEn2.setValue(false);
-
-            motorENA = manager.openPwm(ENA_PORT_NAME);
-            motorENA.setPwmFrequencyHz(50);
-            motorENA.setPwmDutyCycle(100);
+            motorEn1 = PioUtils.openEn1();
+            motorEn2 = PioUtils.openEn2();
+            motorENA = PioUtils.openPwn();
             motorENA.setEnabled(true);
         } catch (IOException e) {
             e.printStackTrace();
@@ -130,7 +114,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        destroyServo();
         destoryGpio(); //销毁电机
         mWilddogRef.startAt().removeEventListener(listener);
     }
@@ -246,34 +229,10 @@ public class MainActivity extends Activity {
                 motorENA.setEnabled(false);
             } else {
                 motorENA.setEnabled(true);
-                motorENA.setPwmDutyCycle(su);
+                motorENA. setPwmDutyCycle(su);
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void setupServo() {
-        try {
-            mServo = new Servo(PWM_BUS);
-            mServo.setAngleRange(0f, 180f);
-            mServo.setEnabled(true);
-            mServo.setAngle(90f);
-        } catch (IOException e) {
-            Log.e(TAG, "Error creating Servo", e);
-        }
-    }
-
-    private void destroyServo() {
-        if (mServo != null) {
-            try {
-                mServo.setEnabled(false);
-                mServo.close();
-            } catch (IOException e) {
-                Log.e(TAG, "Error closing Servo");
-            } finally {
-                mServo = null;
-            }
         }
     }
 
@@ -282,6 +241,10 @@ public class MainActivity extends Activity {
      */
     private void destoryGpio() {
         try {
+            if (mServo != null) {
+                mServo.setEnabled(false);
+                mServo.close();
+            }
             if (motorEn1 != null) {
                 motorEn1.close();
             }
@@ -294,6 +257,7 @@ public class MainActivity extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            mServo = null;
             motorEn1 = null;
             motorEn2 = null;
             motorENA = null;
