@@ -25,22 +25,22 @@ public class BoardUtils {
 
         @Override
         public String getServoBus() {
-            return "PWM1";
+            return "PWM0";
         }
 
         @Override
         public String getServoBusEn1() {
-            return "BCM17";
+            return "BCM5";
         }
 
         @Override
         public String getServoBusEn2() {
-            return "BCM27";
+            return "BCM6";
         }
 
         @Override
         public String getServoBusEnA() {
-            return "PWM0";
+            return "PWM1";
         }
     }
 
