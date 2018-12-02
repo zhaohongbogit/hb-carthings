@@ -16,6 +16,7 @@ import com.wilddog.client.ValueEventListener;
 import com.wilddog.client.WilddogSync;
 
 import java.io.IOException;
+import java.util.Map;
 
 import tk.hongbo.publicdata.Constans;
 import tk.hongbo.publicdata.Direction;
@@ -87,7 +88,7 @@ public class MainActivity extends Activity {
 
     public void onMessage(DataSnapshot dataSnapshot) {
         if (dataSnapshot.exists() && dataSnapshot.getKey().equals(MoveEntity.WILDDOG_REF_MOVE)) {
-            MoveEntity entity = MoveEntity.parse(dataSnapshot.getValue());
+            MoveEntity entity = MoveEntity.parseMap((Map<String, String>) dataSnapshot.getValue());
             trans(entity);
         }
     }
@@ -125,8 +126,8 @@ public class MainActivity extends Activity {
      */
     private void trans(MoveEntity entity) {
         try {
-            transDirection(entity.moveDirection);
-            transPower(entity.movePower);
+            transDirection(Direction.parse(entity.moveDirection));
+            transPower(Power.parse(entity.movePower));
         } catch (IOException e) {
             Log.e(TAG, "Error setting the angle", e);
         }
@@ -161,6 +162,9 @@ public class MainActivity extends Activity {
      * @param power
      */
     private void transPower(Power power) {
+        if(power==null){
+            return;
+        }
         switch (power) {
             case POWER_STOP:
                 runMotor(0);

@@ -12,6 +12,8 @@ import com.wilddog.client.SyncError;
 import com.wilddog.client.SyncReference;
 import com.wilddog.client.WilddogSync;
 
+import java.util.Map;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import tk.hongbo.car.widget.RockerView;
@@ -156,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onMessage(DataSnapshot dataSnapshot) {
         if (dataSnapshot.exists() && dataSnapshot.getKey().equals(MoveEntity.WILDDOG_REF_MOVE)) {
-            MoveEntity entity = MoveEntity.parse(dataSnapshot.getValue());
+            MoveEntity entity = MoveEntity.parseMap((Map<String, String>) dataSnapshot.getValue());
             msg.setText("moveDirection：" + entity.moveDirection + "\r\nmovePower：" + entity.movePower);
         }
     }
@@ -169,8 +171,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private void sendMsg(Direction direction, Power power) {
         MoveEntity entity = new MoveEntity();
-        entity.moveDirection = direction;
-        entity.movePower = power;
+        entity.moveDirection = direction.direction;
+        entity.movePower = power.power;
         pushMove(entity);
     }
 

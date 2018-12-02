@@ -7,13 +7,29 @@ import com.google.gson.annotations.SerializedName;
  */
 public enum Power {
 
-    POWER_STOP(1000),
-    POWER_FORWARD_HIGH(1011),
-    POWER_FORWARD_LOW(1001),
-    POWER_BACK_HIGH(1022),
-    POWER_BACK_LOW(1002);
+    POWER_STOP("POWER_STOP"),
+    POWER_FORWARD_HIGH("POWER_FORWARD_HIGH"),
+    POWER_FORWARD_LOW("POWER_FORWARD_LOW"),
+    POWER_BACK_HIGH("POWER_BACK_HIGH"),
+    POWER_BACK_LOW("POWER_BACK_LOW");
 
-    private Integer power;
+    public String power;
+
+    public static Power parse(String code){
+        switch (code){
+            case "POWER_STOP":
+                return POWER_STOP;
+            case "POWER_FORWARD_HIGH":
+                return POWER_FORWARD_HIGH;
+            case "POWER_FORWARD_LOW":
+                return POWER_FORWARD_LOW;
+            case "POWER_BACK_HIGH":
+                return POWER_BACK_HIGH;
+            case "POWER_BACK_LOW":
+                return POWER_BACK_LOW;
+        }
+        return null;
+    }
 
     /*
     动力
@@ -23,7 +39,7 @@ public enum Power {
     4. 后退慢速
     5. 动力停止
     */
-    Power(Integer power) {
+    Power(String power) {
         this.power = power;
     }
 }

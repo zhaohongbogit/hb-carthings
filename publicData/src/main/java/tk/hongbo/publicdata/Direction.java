@@ -5,11 +5,24 @@ package tk.hongbo.publicdata;
  */
 public enum Direction {
 
-    DIRECTION_RUN(2000),
-    DIRECTION_LEFT(2001),
-    DIRECTION_RIGHT(2002);
+    DIRECTION_RUN("DIRECTION_RUN"),
+    DIRECTION_LEFT("DIRECTION_LEFT"),
+    DIRECTION_RIGHT("DIRECTION_RIGHT");
 
-    private Integer direction;
+    public String direction;
+
+    public static Direction parse(String direction) {
+        switch (direction) {
+            case "DIRECTION_RUN":
+                return DIRECTION_RUN;
+            case "DIRECTION_LEFT":
+                return DIRECTION_LEFT;
+            case "DIRECTION_RIGHT":
+                return DIRECTION_RIGHT;
+            default:
+                return null;
+        }
+    }
 
     /*
     方向
@@ -17,7 +30,7 @@ public enum Direction {
     2. 右转极限
     3. 正方向
      */
-    Direction(Integer direction) {
+    Direction(String direction) {
         this.direction = direction;
     }
 }
