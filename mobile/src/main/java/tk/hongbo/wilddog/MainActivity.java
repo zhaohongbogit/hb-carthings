@@ -1,6 +1,7 @@
 package tk.hongbo.wilddog;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     TextView msg;
     @BindView(R.id.rockerView)
     RockerView rockerView;
+    @BindView(R.id.floatingActionButton)
+    FloatingActionButton floatingActionButton;
 
     private SyncReference mWilddogRef; //野狗数据仓库
 
@@ -79,6 +82,10 @@ public class MainActivity extends AppCompatActivity {
         mWilddogRef = WilddogSync.getInstance().getReference().child(Constans.WILDDOG_REF);
         Query query = mWilddogRef.startAt();
         query.addChildEventListener(listener);
+
+        floatingActionButton.setOnClickListener(v -> {
+            mWilddogRef.child(MoveEntity.WILDDOG_REF_MOVE).removeValue();
+        });
     }
 
     /**
