@@ -176,6 +176,9 @@ public class MainActivity extends Activity {
      */
     private void trans(MoveEntity entity) {
         try {
+            if (entity == null) {
+                return;
+            }
             transDirection(entity.getDirection());
             transPower(entity.getPower());
         } catch (IOException e) {

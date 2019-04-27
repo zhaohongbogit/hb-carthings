@@ -8,12 +8,12 @@ import java.util.Map;
  */
 public class MoveEntity {
 
-    private int power; //0:停止 1：高速前进 11：低速前进 2：高速后退 22：低速后退
     private int direction; //0:正前方 -1：左方向 1：右方向
+    private int power; //0:停止 1：高速前进 11：低速前进 2：高速后退 22：低速后退
 
-    public MoveEntity(int power, int direction) {
-        this.power = power;
+    public MoveEntity(int direction, int power) {
         this.direction = direction;
+        this.power = power;
     }
 
     public int getPower() {
