@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="tk.hongbo.car">
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.things.permission.USE_PERIPHERAL_IO" />
@@ -22,12 +23,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <receiver android:name="com.wilddog.client.receiver.WilddogAuthCastReceiver">
-            <intent-filter>
-                <action android:name="com.wilddog.wilddogauth.signinsuccess" />
-                <action android:name="com.wilddog.wilddogauth.signoutsuccess" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

@@ -14,7 +14,5 @@ public class ZApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        WilddogOptions wilddogOptions = new WilddogOptions.Builder().setSyncUrl("https://wd1131873415xbudnd.wilddogio.com").build();
-        WilddogApp.initializeApp(this, wilddogOptions);
     }
 }

@@ -1,24 +1,32 @@
 package tk.hongbo.car;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
+import android.media.ImageReader;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.things.contrib.driver.pwmservo.Servo;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.Pwm;
-import com.wilddog.client.ChildEventListener;
-import com.wilddog.client.DataSnapshot;
-import com.wilddog.client.Query;
-import com.wilddog.client.SyncError;
-import com.wilddog.client.SyncReference;
-import com.wilddog.client.ValueEventListener;
-import com.wilddog.client.WilddogSync;
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Map;
+import java.nio.ByteBuffer;
+import java.util.Random;
 
-import tk.hongbo.publicdata.Constans;
+import tk.hongbo.car.camera.DoorbellCamera;
+import tk.hongbo.car.utils.Server;
+import tk.hongbo.car.utils.ServerClient;
 import tk.hongbo.publicdata.Direction;
 import tk.hongbo.publicdata.MoveEntity;
 import tk.hongbo.publicdata.Power;
@@ -31,66 +39,122 @@ public class MainActivity extends Activity {
     Pwm motorENA; //使能端A
     Servo mServo;
 
-    SyncReference mWilddogRef;
+    private Server server;
+    private DoorbellCamera mCamera;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initGpio(); //初始化电机
 
-        //监听数据裱花
-        mWilddogRef = WilddogSync.getInstance().getReference();
-        mWilddogRef.addValueEventListener(eventListener);
-        Query query = mWilddogRef.child(Constans.WILDDOG_REF).startAt();
-        query.addChildEventListener(listener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                server = new Server();
+                server.createSocket(new ServerClient.OnMessageListener() {
+                    @Override
+                    public void onReceive(ServerClient client, String str) {
+                        showMessage(str);
+                    }
+                });
+            }
+        }).start();
+
+        handler.post(runnable);
+
+        initCamera();
     }
 
-    ValueEventListener eventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            Log.d(TAG, "onDataChange");
-        }
+    private void showMessage(final String str) {
+        new Handler(getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
+    Handler handler = new Handler();
+    Runnable runnable = new Runnable() {
         @Override
-        public void onCancelled(SyncError syncError) {
-            Log.d(TAG, "onCancelled");
+        public void run() {
+            server.sendMsg("随机数字是" + new Random().nextInt(100) + "【服务端发送】");
+            handler.postDelayed(runnable, 5000);
         }
     };
 
-    ChildEventListener listener = new ChildEventListener() {
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            Log.d(TAG, "onChildAdded ，" + s);
-            onMessage(dataSnapshot);
+    /**
+     * A {@link Handler} for running Camera tasks in the background.
+     */
+    private Handler mCameraHandler;
+
+    /**
+     * Listener for new camera images.
+     */
+    private ImageReader.OnImageAvailableListener mOnImageAvailableListener =
+            new ImageReader.OnImageAvailableListener() {
+                @Override
+                public void onImageAvailable(ImageReader reader) {
+                    Log.d("123", "PhotoCamera OnImageAvailableListener");
+
+                    Image image = reader.acquireLatestImage();
+                    // get image bytes
+                    ByteBuffer imageBuf = image.getPlanes()[0].getBuffer();
+                    final byte[] imageBytes = new byte[imageBuf.remaining()];
+                    imageBuf.get(imageBytes);
+                    image.close();
+                    onPictureTaken(imageBytes);
+                }
+            };
+
+    /**
+     * Handle image processing in Firebase and Cloud Vision.
+     */
+    private void onPictureTaken(final byte[] imageBytes) {
+        Log.d("123", "PhotoCamera onPictureTaken");
+        if (imageBytes != null) {
+            String imageStr = Base64.encodeToString(imageBytes, Base64.NO_WRAP | Base64.URL_SAFE);
+            Log.d("123", "imageBase64:" + imageStr);
+
+            final Bitmap[] bitmap = {BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length)};
+            if (bitmap[0] != null) {
+                try {
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(getExternalFilesDir(null) + "pic.jpg"));// /sdcard/Android/data/com.things.thingssocket/filespic.jpg
+                    bitmap[0].compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                    bos.flush();
+                    bos.close();
+                    bitmap[0].recycle();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                final Bitmap bitmaps = BitmapFactory.decodeFile(getExternalFilesDir(null) + "pic.jpg");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        server.sendImage(bitmaps);
+                    }
+                }).start();
+            }
+        }
+    }
+
+    private HandlerThread mCameraThread;
+
+    public void initCamera() {
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            return;
         }
 
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            Log.d(TAG, "onChildChanged ，" + s);
-            onMessage(dataSnapshot);
-        }
+        DoorbellCamera.dumpFormatInfo(this);
 
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-            Log.d(TAG, "onChildRemoved");
-        }
+        // Creates new handlers and associated threads for camera and networking operations.
+        mCameraThread = new HandlerThread("CameraBackground");
+        mCameraThread.start();
+        mCameraHandler = new Handler(mCameraThread.getLooper());//在mCameraThread这个线程中创建handler对象
 
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            Log.d(TAG, "onChildMoved ，" + s);
-        }
-
-        @Override
-        public void onCancelled(SyncError syncError) {
-            Log.d(TAG, "onCancelled ，" + syncError.getDetails());
-        }
-    };
-
-    public void onMessage(DataSnapshot dataSnapshot) {
-        if (dataSnapshot.exists() && dataSnapshot.getKey().equals(MoveEntity.WILDDOG_REF_MOVE)) {
-            MoveEntity entity = MoveEntity.parseMap((Map<String, String>) dataSnapshot.getValue());
-            trans(entity);
-        }
+        // Camera code is complicated, so we've shoved it all in this closet class for you.
+        mCamera = DoorbellCamera.getInstance();
+        mCamera.initializeCamera(this, mCameraHandler, mOnImageAvailableListener);
     }
 
     /**
@@ -116,7 +180,6 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         destoryGpio(); //销毁电机
-        mWilddogRef.startAt().removeEventListener(listener);
     }
 
     /**
@@ -162,7 +225,7 @@ public class MainActivity extends Activity {
      * @param power
      */
     private void transPower(Power power) {
-        if(power==null){
+        if (power == null) {
             return;
         }
         switch (power) {
@@ -233,7 +296,7 @@ public class MainActivity extends Activity {
                 motorENA.setEnabled(false);
             } else {
                 motorENA.setEnabled(true);
-                motorENA. setPwmDutyCycle(su);
+                motorENA.setPwmDutyCycle(su);
             }
         } catch (IOException e) {
             e.printStackTrace();
