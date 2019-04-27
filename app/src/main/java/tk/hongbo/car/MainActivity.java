@@ -226,7 +226,7 @@ public class MainActivity extends Activity {
                 break;
             case 11:
                 runMotor(1);
-                runMoto2(80);
+                runMoto2(100);
                 break;
             case 2:
                 runMotor(2);
@@ -234,7 +234,7 @@ public class MainActivity extends Activity {
                 break;
             case 22:
                 runMotor(2);
-                runMoto2(80);
+                runMoto2(100);
                 break;
         }
     }

@@ -3,11 +3,9 @@ package tk.hongbo.wilddog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -24,12 +22,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
-    @BindView(R.id.msg)
-    TextView msg;
     @BindView(R.id.rockerView)
     RockerView rockerView;
-    @BindView(R.id.floatingActionButton)
-    FloatingActionButton floatingActionButton;
     @BindView(R.id.imageView)
     ImageView bgImageView;
 
@@ -59,9 +53,6 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d(TAG, "RockerView onFinish");
                 shendMove(DIRECTION_CENTER);
             }
-        });
-
-        floatingActionButton.setOnClickListener(v -> {
         });
 
         new Thread(new Runnable() {

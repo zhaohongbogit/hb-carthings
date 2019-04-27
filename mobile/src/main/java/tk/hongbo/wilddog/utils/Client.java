@@ -77,10 +77,12 @@ public class Client extends Thread {
                 try {
                     byte[] bytes = msg.getBytes();
                     byte[] lenByte = BytesUtils.int2ByteArray(bytes.length);
-                    out.write(BytesUtils.int2ByteArray(1));
-                    out.write(lenByte);
-                    out.write(bytes);
-                    out.flush();
+                    if (out != null) {
+                        out.write(BytesUtils.int2ByteArray(1));
+                        out.write(lenByte);
+                        out.write(bytes);
+                        out.flush();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
