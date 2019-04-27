@@ -64,12 +64,12 @@ public class ServerClient extends Thread {
         }).start();
     }
 
-    public void sendImage(final Bitmap bitmap) {
+    public void sendImage(final String imageStr) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    byte[] outdata = transImage(bitmap, 640, 480);
+                    byte[] outdata = imageStr.getBytes();
                     if (outdata == null || outdata.length == 0) {
                         return;
                     }
@@ -78,9 +78,6 @@ public class ServerClient extends Thread {
                     out.write(BytesUtils.int2ByteArray(datalen));
                     out.write(outdata);
                     out.flush();
-                    if (!bitmap.isRecycled()) {
-                        bitmap.recycle();
-                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

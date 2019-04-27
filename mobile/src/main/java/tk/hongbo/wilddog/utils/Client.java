@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Base64;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +52,9 @@ public class Client extends Thread {
                             onMessageListener.onMessage(str);
                         }
                     } else if (type == 2) {
+
+                        Base64.decode(new String(srcData),Base64.NO_WRAP | Base64.URL_SAFE);
+
                         final Bitmap bitmap = BitmapFactory.decodeByteArray(srcData, 0, len);
                         if (onMessageListener != null) {
                             new Handler(Looper.getMainLooper()).post(new Runnable() {

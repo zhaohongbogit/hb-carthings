@@ -33,10 +33,10 @@ public class Server {
         }
     }
 
-    public void sendImage(Bitmap bitmap) {
+    public void sendImage(String imageStr) {
         if (serverClients != null && !serverClients.isEmpty()) {
             for (ServerClient client : serverClients) {
-                client.sendImage(bitmap);
+                client.sendImage(imageStr);
             }
         }
     }

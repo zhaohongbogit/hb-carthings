@@ -1,11 +1,14 @@
 package tk.hongbo.wilddog;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ImageView;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -25,9 +28,10 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.rockerView)
     RockerView rockerView;
     @BindView(R.id.imageView)
-    ImageView bgImageView;
+    SurfaceView bgImageView;
 
     Client client;
+    SurfaceHolder holder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        holder = bgImageView.getHolder();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -66,12 +72,29 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onImage(Bitmap bitmap) {
-                        bgImageView.setImageBitmap(bitmap);
+                        drawImg(bitmap);
                     }
                 });
                 client.start();
             }
         }).start();
+    }
+
+    protected void onDraw(Canvas canvas, Bitmap bitmap) {
+        canvas.drawColor(Color.BLACK);
+        canvas.drawBitmap(bitmap, 0, 0, null);
+    }
+
+    private void drawImg(Bitmap bitmap) {
+        Canvas canvas = null;
+        try {
+            canvas = holder.lockCanvas();
+            onDraw(canvas, bitmap);
+        } finally {
+            if (canvas != null) {
+                holder.unlockCanvasAndPost(canvas);
+            }
+        }
     }
 
     private void showMessage(final String str) {
