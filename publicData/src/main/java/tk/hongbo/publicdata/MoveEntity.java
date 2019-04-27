@@ -8,15 +8,27 @@ import java.util.Map;
  */
 public class MoveEntity {
 
-    public static final String WILDDOG_REF_MOVE = "moveEntity";
+    private int power; //0:停止 1：高速前进 11：低速前进 2：高速后退 22：低速后退
+    private int direction; //0:正前方 -1：左方向 1：右方向
 
-    public String movePower;
-    public String moveDirection;
+    public MoveEntity(int power, int direction) {
+        this.power = power;
+        this.direction = direction;
+    }
 
-    public static MoveEntity parseMap(Map<String, String> map) {
-        MoveEntity moveEntity = new MoveEntity();
-        moveEntity.movePower = map.get("movePower");
-        moveEntity.moveDirection = map.get("moveDirection");
-        return moveEntity;
+    public int getPower() {
+        return power;
+    }
+
+    public void setPower(int power) {
+        this.power = power;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 }

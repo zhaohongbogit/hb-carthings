@@ -12,24 +12,21 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.things.contrib.driver.pwmservo.Servo;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.Pwm;
+import com.google.gson.Gson;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Random;
 
 import tk.hongbo.car.camera.DoorbellCamera;
 import tk.hongbo.car.utils.Server;
 import tk.hongbo.car.utils.ServerClient;
-import tk.hongbo.publicdata.Direction;
 import tk.hongbo.publicdata.MoveEntity;
-import tk.hongbo.publicdata.Power;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -60,8 +57,6 @@ public class MainActivity extends Activity {
             }
         }).start();
 
-        handler.post(runnable);
-
         initCamera();
     }
 
@@ -69,19 +64,11 @@ public class MainActivity extends Activity {
         new Handler(getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
+                MoveEntity me = new Gson().fromJson(str, MoveEntity.class);
+                trans(me);
             }
         });
     }
-
-    Handler handler = new Handler();
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            server.sendMsg("随机数字是" + new Random().nextInt(100) + "【服务端发送】");
-            handler.postDelayed(runnable, 5000);
-        }
-    };
 
     /**
      * A {@link Handler} for running Camera tasks in the background.
@@ -189,8 +176,8 @@ public class MainActivity extends Activity {
      */
     private void trans(MoveEntity entity) {
         try {
-            transDirection(Direction.parse(entity.moveDirection));
-            transPower(Power.parse(entity.movePower));
+            transDirection(entity.getDirection());
+            transPower(entity.getPower());
         } catch (IOException e) {
             Log.e(TAG, "Error setting the angle", e);
         }
@@ -202,18 +189,18 @@ public class MainActivity extends Activity {
      * @param direction
      * @throws IOException
      */
-    private void transDirection(Direction direction) throws IOException {
+    private void transDirection(int direction) throws IOException {
         if (mServo == null) {
             return;
         }
         switch (direction) {
-            case DIRECTION_RUN:
+            case 0:
                 mServo.setAngle(90f);
                 break;
-            case DIRECTION_LEFT:
+            case -1:
                 mServo.setAngle(0f);
                 break;
-            case DIRECTION_RIGHT:
+            case 1:
                 mServo.setAngle(150f);
                 break;
         }
@@ -224,28 +211,25 @@ public class MainActivity extends Activity {
      *
      * @param power
      */
-    private void transPower(Power power) {
-        if (power == null) {
-            return;
-        }
+    private void transPower(int power) {
         switch (power) {
-            case POWER_STOP:
+            case 0:
                 runMotor(0);
                 runMoto2(0);
                 break;
-            case POWER_FORWARD_HIGH:
+            case 1:
                 runMotor(1);
                 runMoto2(100);
                 break;
-            case POWER_FORWARD_LOW:
+            case 11:
                 runMotor(1);
                 runMoto2(80);
                 break;
-            case POWER_BACK_HIGH:
+            case 2:
                 runMotor(2);
                 runMoto2(100);
                 break;
-            case POWER_BACK_LOW:
+            case 22:
                 runMotor(2);
                 runMoto2(80);
                 break;

@@ -3,11 +3,9 @@ package tk.hongbo.car.utils;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 
@@ -24,18 +22,27 @@ public class ServerClient extends Thread {
 
     @Override
     public void run() {
-        while (true) {
-            try {
-                InputStream inputStream = socket.getInputStream();
-                out = socket.getOutputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                String str = reader.readLine();
+        try {
+            InputStream inputStream = socket.getInputStream();
+            out = socket.getOutputStream();
+            while (true) {
+                byte[] srcType = new byte[4];
+                inputStream.read(srcType);
+                int type = BytesUtils.bytes2Int(srcType);
+
+                byte[] src = new byte[4];
+                inputStream.read(src);
+                int len = BytesUtils.bytes2Int(src);
+
+                byte[] srcData = new byte[len];
+                inputStream.read(srcData);
+
                 if (listener != null) {
-                    listener.onReceive(this, str);
+                    listener.onReceive(this, new String(srcData));
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
