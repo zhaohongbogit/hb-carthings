@@ -3,8 +3,6 @@ package tk.hongbo.car;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Bundle;
@@ -18,8 +16,6 @@ import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.Pwm;
 import com.google.gson.Gson;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -64,6 +60,7 @@ public class MainActivity extends Activity {
         new Handler(getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
+                Log.d("car", "小车收到消息：" + str);
                 MoveEntity me = new Gson().fromJson(str, MoveEntity.class);
                 trans(me);
             }

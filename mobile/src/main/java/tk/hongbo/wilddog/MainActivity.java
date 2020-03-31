@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         rockerView.setOnShakeListener(RockerView.DirectionMode.DIRECTION_8, new RockerView.OnShakeListener() {
             @Override
             public void onStart() {
-//                Log.d(TAG, "RockerView onStart");
+                Log.d(TAG, "RockerView onStart");
             }
 
             @Override
@@ -54,29 +54,26 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-//                Log.d(TAG, "RockerView onFinish");
+                Log.d(TAG, "RockerView onFinish");
                 shendMove(DIRECTION_CENTER);
             }
         });
 
         holder = bgImageView.getHolder();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                client = new Client("192.168.199.99", 12345, new Client.OnMessageListener() {
-                    @Override
-                    public void onMessage(String str) {
-                        showMessage(str);
-                    }
+        new Thread(() -> {
+            client = new Client("192.168.188.8", 12345, new Client.OnMessageListener() {
+                @Override
+                public void onMessage(String str) {
+                    showMessage(str);
+                }
 
-                    @Override
-                    public void onImage(Bitmap bitmap) {
-                        drawImg(bitmap);
-                    }
-                });
-                client.start();
-            }
+                @Override
+                public void onImage(Bitmap bitmap) {
+                    drawImg(bitmap);
+                }
+            });
+            client.start();
         }).start();
     }
 
@@ -98,12 +95,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showMessage(final String str) {
-        new Handler(getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
-            }
-        });
+        new Handler(getMainLooper()).post(() -> Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show());
     }
 
     /**

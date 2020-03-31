@@ -30,12 +30,12 @@ public class BoardUtils {
 
         @Override
         public String getServoBusEn1() {
-            return "BCM5";
+            return "BCM6";
         }
 
         @Override
         public String getServoBusEn2() {
-            return "BCM6";
+            return "BCM5";
         }
 
         @Override

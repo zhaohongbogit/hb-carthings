@@ -1,7 +1,5 @@
 package tk.hongbo.car.utils;
 
-import android.graphics.Bitmap;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

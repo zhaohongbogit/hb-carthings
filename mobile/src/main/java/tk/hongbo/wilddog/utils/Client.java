@@ -75,21 +75,18 @@ public class Client extends Thread {
     }
 
     public void sendMessage(final String msg) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    byte[] bytes = msg.getBytes();
-                    byte[] lenByte = BytesUtils.int2ByteArray(bytes.length);
-                    if (out != null) {
-                        out.write(BytesUtils.int2ByteArray(1));
-                        out.write(lenByte);
-                        out.write(bytes);
-                        out.flush();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+        new Thread(() -> {
+            try {
+                byte[] bytes = msg.getBytes();
+                byte[] lenByte = BytesUtils.int2ByteArray(bytes.length);
+                if (out != null) {
+                    out.write(BytesUtils.int2ByteArray(1));
+                    out.write(lenByte);
+                    out.write(bytes);
+                    out.flush();
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }).start();
     }
